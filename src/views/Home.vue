@@ -46,12 +46,12 @@
           </div>
           <div v-if="!in_calculation && !is_handle">
             <el-upload
-                auto-upload
+              auto-upload
               class="upload-demo"
               drag
               action="http://www.lzuwk.ltd:8000/test/"
               accept=".lis"
-              :on-success="post_file"
+              :on-success="uploadSuccess"
               :limit="1"
             >
               <i class="el-icon-upload"></i>
@@ -64,15 +64,13 @@
                 </div>
               </template>
             </el-upload>
-
-            <el-button type="primary" @click="post_file">
-              上传
-            </el-button>
-          </div>
-          <div class="row m-2 pl-2" v-if="!is_handle">
-            <div class="custom-file">
-              <input type="file" id="inputGroupFile04" accept=".lis" />
-            </div>
+            <el-button
+              style="margin-left: 10px;"
+              size="small"
+              type="success"
+              @click="post_file"
+              >提交</el-button
+            >
           </div>
         </el-col>
         <el-col :span="24">
@@ -153,6 +151,7 @@ export default {
           time: "100"
         }
       ],
+      file: null,
       result: [],
       final: {},
       list_final: [],
@@ -388,11 +387,13 @@ export default {
         this.is_handle = false;
       }
     },
-    post_file(response, file) {
-      // let file = document.getElementById("inputGroupFile04").files[0];
-      console.log("file:" + file);
+    uploadSuccess(response, file) {
+      console.log("file:" + file.raw);
+      this.file = file;
+    },
+    post_file() {
       let param = new FormData(); //创建form对象
-      param.append("file", file); //通过append向form对象添加数据
+      param.append("file", this.file.raw); //通过append向form对象添加数据
       console.log(param.get("file")); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
 
       let that = this;
