@@ -142,13 +142,13 @@
 <script>
 import {request} from "@/network/request";
 // import {ElMessage} from "element-plus";
-// import store from "@/store";
+import store from "@/store";
 // import home1 from "../assets/img/home1.jpg";
 // import home2 from "../assets/img/home2.jpg";
 // import home3 from "../assets/img/home3.jpg";
 // import file_result from "../assets/result_file.txt";
-import Chart from "chart.js";
 import axios from "axios";
+import router from "@/router";
 
 export default {
   data() {
@@ -172,11 +172,8 @@ export default {
       gamma: [],
       in_calculation: false,
       hist_data: {},
-      dp_chart: false,
-      dp_bar_chart: false,
       my_chart: null,
       my_bar_chart: null,
-      data_title: "",
       timer: "",
       hour: 0,
       minutes: 0,
@@ -187,17 +184,6 @@ export default {
       toggle_download: true,
       sort_key: 1,
       nowSort: true,
-      title_list: [
-        {name: "核素名称", isSelected: false, key: 0},
-        {name: "质子数", isSelected: false, key: 1},
-        {name: "质量数", isSelected: false, key: 2},
-        {name: "核素数量", isSelected: false, key: 3},
-        {name: "核素活度", isSelected: false, key: 4},
-        {name: "核素质量", isSelected: false, key: 5},
-        {name: "食入毒性", isSelected: false, key: 6},
-        {name: "吸入毒性", isSelected: false, key: 7},
-        {name: "反应放能", isSelected: false, key: 8}
-      ]
     };
   },
   created: function () {
@@ -243,9 +229,8 @@ export default {
             console.log("res ==> ", res);
             if (res.data !== "time < 0") {
               console.log("resData" + res.data);
-              that.analyze_data(res.data);
+              store.commit("setResult", res.data);
               that.data_title = this.get_date();
-              localStorage.setItem(this.data_title, JSON.stringify(that.result));
             } else {
               alert(res.data);
             }
@@ -265,33 +250,6 @@ export default {
       this.hour = 0;
       this.minutes = 0;
       this.seconds = 0;
-    },
-    analyze_data(data) {
-      this.result = data;
-      this.final = data.final;
-      for (let key in this.final) {
-        let temp = [];
-        temp.push(key);
-        this.list_final.push(temp.concat(this.final[key]));
-      }
-      this.spectrum_alpha = data.spectrum_alpha;
-      this.spectrum_beta = data.spectrum_beta;
-      this.spectrum_gamma = data.spectrum_gamma;
-      this.alpha = data.alpha;
-      this.beta = data.beta;
-      this.gamma = data.gamma;
-    },
-    clear_data() {
-      this.result = [];
-      this.final = [];
-      this.list_final = [];
-      this.spectrum_alpha = {};
-      this.spectrum_beta = {};
-      this.spectrum_gamma = {};
-      this.toggle_download = true;
-      this.alpha = [];
-      this.beta = [];
-      this.gamma = [];
     },
     get_date() {
       let date = new Date();
@@ -333,7 +291,8 @@ export default {
             that.end_timing();
             console.log("res ==> ", res);
             console.log(res.data);
-            that.analyze_data(res.data);
+            store.commit("setResult", res.data);
+            router.push({name:"Result"})
             that.data_title = this.get_date();
           })
           .catch(err => {

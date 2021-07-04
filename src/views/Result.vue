@@ -1,46 +1,81 @@
 <template>
-  <div class="about">
-    <div class="row m-2" v-if="result.length!==0">
-      <button type="button" class="btn btn-sm btn-outline-info m-2" @click="get_back">返回</button>
-      <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_final">下载核素信息</button>
-      <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_abg">下载能谱信息</button>
-    </div>
+  <el-container>
+    <el-main>
 
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <div class="row m-2">
+            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="get_back">返回</button>
+            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_final">下载核素信息</button>
+            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_abg">下载能谱信息</button>
+          </div>
+        </el-col>
+      </el-row>
 
-    <div v-if="result.length!==0">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item"><h5 v-text="data_title"></h5></li>
-      </ul>
-      <table class="table table-hover table-responsive-sm table-sm">
-        <thead class="thead-light">
-        <tr>
-          <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name" @click="sort_list(item)"
-              :class="{'text-primary':item.isSelected}"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--        <tr v-for="list in sortFinal" v-if="list[0] !== 'q' && list[0] !== 'total'">-->
-        <!--          <th v-for="(item, key) in list" v-if="key === 0" v-text="item"></th>-->
-        <!--          <td v-for="(item, key) in list" v-if="key !== 0" v-text="item"></td>-->
-        <!--        </tr>-->
-        </tbody>
-      </table>
-      <table class="table table-hover table-responsive-sm table-sm">
-        <thead class="thead-light">
-        <tr>
-          <th scope="col">核素活度</th>
-          <th scope="col">核素质量</th>
-          <th scope="col">食入毒性</th>
-          <th scope="col">吸入毒性</th>
-          <th scope="col">反应总放能</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--        <tr v-for="(list,key) in final">-->
-        <!--          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>-->
-        <!--        </tr>-->
-        </tbody>
-      </table>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data"
+          >
+            <el-table-column
+                prop="name"
+                label="核素名称"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                label="核素数量"
+                :formatter="formatter">
+                <el-table-column v-for="(item, key) in sl" :key="key"
+                                 :prop="key"
+                                 :label="key"
+                                 sortable>
+                </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><h5 v-text="data_title"></h5></li>
+        </ul>
+        <table class="table table-hover table-responsive-sm table-sm">
+          <thead class="thead-light">
+          <tr>
+            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"
+                @click="sort_list(item)"
+                :class="{'text-primary':item.isSelected}"></th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <table class="table table-hover table-responsive-sm table-sm">
+          <thead class="thead-light">
+          <tr>
+            <th scope="col">核素活度</th>
+            <th scope="col">核素质量</th>
+            <th scope="col">食入毒性</th>
+            <th scope="col">吸入毒性</th>
+            <th scope="col">反应总放能</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!--        <tr v-for="(list,key) in final">-->
+          <!--          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>-->
+          <!--        </tr>-->
+          </tbody>
+        </table>
+      </el-row>
+
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><h5>能谱图</h5></li>
         <li class="list-group-item">
@@ -78,22 +113,106 @@
       <div v-show="dp_bar_chart" class="img-fluid" style="position: relative">
         <canvas id="myBarChart"></canvas>
       </div>
-    </div>
-    <hr/>
-  </div>
+      <hr/>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
 import {request} from "@/network/request";
 import Chart from "chart.js";
+import store from "@/store";
 
 export default {
+  data() {
+    return {
+      table_data: [],
+
+      dp_chart: false,
+      dp_bar_chart: false,
+      data_title: "Test",
+      title_list: [
+        {name: "核素名称", isSelected: false, key: 0},
+        {name: "质子数", isSelected: false, key: 1},
+        {name: "质量数", isSelected: false, key: 2},
+        {name: "核素数量", isSelected: false, key: 3},
+        {name: "核素活度", isSelected: false, key: 4},
+        {name: "核素质量", isSelected: false, key: 5},
+        {name: "食入毒性", isSelected: false, key: 6},
+        {name: "吸入毒性", isSelected: false, key: 7},
+        {name: "反应放能", isSelected: false, key: 8}
+      ]
+    }
+  },
+  created() {
+    let data = store.getters.getResult.data;
+    this.analyze_data(data);
+  },
   computed: {
     sortFinal: function () {
       return this.sortByKey(this.list_final, this.sort_key);
     }
   },
   methods: {
+    analyze_data(data) {
+      console.log(data)
+      let zzs = data.zhizishu
+      let zls = data.zhiliangshu
+      let sl = data.shuliang
+
+      for (let zzsKey in zzs) {
+        let times = [];
+        for (let time in zzs[zzsKey]) {
+          times.push(time)
+        }
+
+        let temp = {};
+        temp.name = zzsKey;
+        temp.zzs = zzs[zzsKey][times[0]];
+        temp.zls = zls[zzsKey][times[0]];
+        temp.sl = sl[zzsKey];
+        console.log(temp);
+
+        this.table_data.push(temp);
+      }
+
+      // this.result = data;
+      // this.final = data.final;
+      // for (let key in this.final) {
+      //   let temp = [];
+      //   temp.push(key);
+      //   this.list_final.push(temp.concat(this.final[key]));
+      // }
+      // this.spectrum_alpha = data.spectrum_alpha;
+      // this.spectrum_beta = data.spectrum_beta;
+      // this.spectrum_gamma = data.spectrum_gamma;
+      // this.alpha = data.alpha;
+      // this.beta = data.beta;
+      // this.gamma = data.gamma;
+    },
+    formatter(row, column, cellValue, index) {
+      console.log("row : " + row)
+      console.log(row)
+      console.log("column : ")
+      console.log(column)
+      console.log("cellValue : ")
+      console.log(cellValue)
+      console.log("index : ")
+      console.log(index)
+      return JSON.stringify(cellValue);
+    },
+    clear_data() {
+      this.result = [];
+      this.final = [];
+      this.list_final = [];
+      this.spectrum_alpha = {};
+      this.spectrum_beta = {};
+      this.spectrum_gamma = {};
+      this.toggle_download = true;
+      this.alpha = [];
+      this.beta = [];
+      this.gamma = [];
+    },
     sort_list(item) {
       this.sort_key = item.key;
       for (let i = 0; i < this.title_list.length; i++) {
