@@ -19,8 +19,7 @@
           >
             <el-table-column
                 prop="name"
-                label="核素名称"
-                sortable>
+                label="核素名称">
             </el-table-column>
             <el-table-column
                 prop="zzs"
@@ -33,13 +32,16 @@
                 sortable>
             </el-table-column>
             <el-table-column
-                label="核素数量"
-                :formatter="formatter">
-                <el-table-column v-for="(item, key) in sl" :key="key"
-                                 :prop="key"
-                                 :label="key"
-                                 sortable>
-                </el-table-column>
+                v-for="(item, index) in times"
+                :key="item"
+                :label="item"
+                sortable
+                :sort-orders="['ascending', 'descending']"
+                :sort-by="this.sl[index]"
+                >
+              <template v-slot="scope">
+                <span>{{scope.row.sl[index]}}</span>
+              </template>
             </el-table-column>
           </el-table>
         </el-col>
@@ -127,7 +129,8 @@ export default {
   data() {
     return {
       table_data: [],
-
+      times: [],
+      sl: [],
       dp_chart: false,
       dp_bar_chart: false,
       data_title: "Test",
@@ -155,26 +158,43 @@ export default {
   },
   methods: {
     analyze_data(data) {
-      console.log(data)
+      console.log('data:', data)
+      let hesu = data.hesu
       let zzs = data.zhizishu
       let zls = data.zhiliangshu
       let sl = data.shuliang
+      this.sl = sl
+      this.times = data.times
+      console.log(this.sl)
 
-      for (let zzsKey in zzs) {
-        let times = [];
-        for (let time in zzs[zzsKey]) {
-          times.push(time)
+      for (let i in hesu) {
+        let temp = {}
+        temp.name = hesu[i]
+        temp.zzs = zzs[0][i]
+        temp.zls = zls[0][i]
+        temp.sl = []
+        for (let j in this.times){
+          temp.sl.push(sl[j][i])
         }
-
-        let temp = {};
-        temp.name = zzsKey;
-        temp.zzs = zzs[zzsKey][times[0]];
-        temp.zls = zls[zzsKey][times[0]];
-        temp.sl = sl[zzsKey];
-        console.log(temp);
-
-        this.table_data.push(temp);
+        this.table_data.push(temp)
       }
+
+
+      // for (let zzsKey in zzs) {
+      //   let times = [];
+      //   for (let time in zzs[zzsKey]) {
+      //     times.push(time)
+      //   }
+      //
+      //   let temp = {};
+      //   temp.name = zzsKey;
+      //   temp.zzs = zzs[zzsKey][times[0]];
+      //   temp.zls = zls[zzsKey][times[0]];
+      //   temp.sl = sl[zzsKey];
+      //   console.log(temp);
+      //
+      //   this.table_data.push(temp);
+      // }
 
       // this.result = data;
       // this.final = data.final;
@@ -191,6 +211,7 @@ export default {
       // this.gamma = data.gamma;
     },
     formatter(row, column, cellValue, index) {
+
       console.log("row : " + row)
       console.log(row)
       console.log("column : ")
