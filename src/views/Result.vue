@@ -16,7 +16,13 @@
         <el-col :xl="24" :lg="24">
           <el-table
               :data="table_data"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
           >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
             <el-table-column
                 prop="name"
                 label="核素名称">
@@ -29,19 +35,19 @@
             <el-table-column
                 prop="zls"
                 label="质量数"
-                sortable>
+                sortable
+            >
             </el-table-column>
             <el-table-column
-                v-for="(item, index) in times"
-                :key="item"
-                :label="item"
-                sortable
-                :sort-orders="['ascending', 'descending']"
-                :sort-by="this.sl[index]"
-                >
-              <template v-slot="scope">
-                <span>{{scope.row.sl[index]}}</span>
-              </template>
+                label="数量  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
             </el-table-column>
           </el-table>
         </el-col>
@@ -157,44 +163,31 @@ export default {
     }
   },
   methods: {
+    sortByKey(a, b) {
+      let x = parseFloat(b);
+      let y = parseFloat(a);
+      return x - y;
+    },
     analyze_data(data) {
-      console.log('data:', data)
-      let hesu = data.hesu
+      // console.log('data:', data)
+      let hs = data.hesu
       let zzs = data.zhizishu
       let zls = data.zhiliangshu
       let sl = data.shuliang
       this.sl = sl
       this.times = data.times
-      console.log(this.sl)
+      // console.log(this.sl)
 
-      for (let i in hesu) {
+      for (let i = 0; i < hs.length; i++) {
         let temp = {}
-        temp.name = hesu[i]
+        temp.name = hs[i]
         temp.zzs = zzs[0][i]
         temp.zls = zls[0][i]
-        temp.sl = []
-        for (let j in this.times){
-          temp.sl.push(sl[j][i])
+        for (let j = 0; j < this.times.length; j++) {
+          temp[this.times[j].toString()] = parseFloat(sl[j][i])
         }
         this.table_data.push(temp)
       }
-
-
-      // for (let zzsKey in zzs) {
-      //   let times = [];
-      //   for (let time in zzs[zzsKey]) {
-      //     times.push(time)
-      //   }
-      //
-      //   let temp = {};
-      //   temp.name = zzsKey;
-      //   temp.zzs = zzs[zzsKey][times[0]];
-      //   temp.zls = zls[zzsKey][times[0]];
-      //   temp.sl = sl[zzsKey];
-      //   console.log(temp);
-      //
-      //   this.table_data.push(temp);
-      // }
 
       // this.result = data;
       // this.final = data.final;
@@ -210,17 +203,11 @@ export default {
       // this.beta = data.beta;
       // this.gamma = data.gamma;
     },
-    formatter(row, column, cellValue, index) {
-
-      console.log("row : " + row)
-      console.log(row)
-      console.log("column : ")
-      console.log(column)
-      console.log("cellValue : ")
-      console.log(cellValue)
-      console.log("index : ")
-      console.log(index)
-      return JSON.stringify(cellValue);
+    formatter(row, column, cellValue) {
+      return parseFloat(cellValue).toExponential(6);
+    },
+    handleSelectionChange(val) {
+      console.log(val)
     },
     clear_data() {
       this.result = [];

@@ -189,13 +189,6 @@ export default {
   created: function () {
   },
   methods: {
-    sortByKey(array, key) {
-      return array.sort(function (a, b) {
-        let x = parseFloat(b[key]);
-        let y = parseFloat(a[key]);
-        return x < y ? -1 : x > y ? 1 : 0;
-      });
-    },
     select_op() {
       console.log(this.operation);
       if (this.operation === "handle") {
