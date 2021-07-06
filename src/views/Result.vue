@@ -11,11 +11,11 @@
           </div>
         </el-col>
       </el-row>
-
+      <el-divider content-position="left">核素数量表</el-divider>
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data"
+              :data="table_data_sl"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
           >
@@ -52,38 +52,398 @@
           </el-table>
         </el-col>
 
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item"><h5 v-text="data_title"></h5></li>
-        </ul>
-        <table class="table table-hover table-responsive-sm table-sm">
-          <thead class="thead-light">
-          <tr>
-            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"
-                @click="sort_list(item)"
-                :class="{'text-primary':item.isSelected}"></th>
-          </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        <table class="table table-hover table-responsive-sm table-sm">
-          <thead class="thead-light">
-          <tr>
-            <th scope="col">核素活度</th>
-            <th scope="col">核素质量</th>
-            <th scope="col">食入毒性</th>
-            <th scope="col">吸入毒性</th>
-            <th scope="col">反应总放能</th>
-          </tr>
-          </thead>
-          <tbody>
-          <!--        <tr v-for="(list,key) in final">-->
-          <!--          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>-->
-          <!--        </tr>-->
-          </tbody>
-        </table>
+<!--        <ul class="list-group list-group-flush">-->
+<!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+<!--        </ul>-->
+<!--        <table class="table table-hover table-responsive-sm table-sm">-->
+<!--          <thead class="thead-light">-->
+<!--          <tr>-->
+<!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+<!--                @click="sort_list(item)"-->
+<!--                :class="{'text-primary':item.isSelected}"></th>-->
+<!--          </tr>-->
+<!--          </thead>-->
+<!--          <tbody>-->
+<!--          </tbody>-->
+<!--        </table>-->
+<!--        <table class="table table-hover table-responsive-sm table-sm">-->
+<!--          <thead class="thead-light">-->
+<!--          <tr>-->
+<!--            <th scope="col">核素活度</th>-->
+<!--            <th scope="col">核素质量</th>-->
+<!--            <th scope="col">食入毒性</th>-->
+<!--            <th scope="col">吸入毒性</th>-->
+<!--            <th scope="col">反应总放能</th>-->
+<!--          </tr>-->
+<!--          </thead>-->
+<!--          <tbody>-->
+<!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+<!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+<!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--          </tbody>-->
+<!--        </table>-->
       </el-row>
+      <el-divider content-position="left">核素活度表</el-divider>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data_hd"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="核素名称">
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable
+            >
+            </el-table-column>
+            <el-table-column
+                label="活度  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
 
+        <!--        <ul class="list-group list-group-flush">-->
+        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+        <!--        </ul>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+        <!--                @click="sort_list(item)"-->
+        <!--                :class="{'text-primary':item.isSelected}"></th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col">核素活度</th>-->
+        <!--            <th scope="col">核素质量</th>-->
+        <!--            <th scope="col">食入毒性</th>-->
+        <!--            <th scope="col">吸入毒性</th>-->
+        <!--            <th scope="col">反应总放能</th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+      </el-row>
+      <el-divider content-position="left">核素质量表</el-divider>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data_zl"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="核素名称">
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable
+            >
+            </el-table-column>
+            <el-table-column
+                label="数量  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+        <!--        <ul class="list-group list-group-flush">-->
+        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+        <!--        </ul>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+        <!--                @click="sort_list(item)"-->
+        <!--                :class="{'text-primary':item.isSelected}"></th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col">核素活度</th>-->
+        <!--            <th scope="col">核素质量</th>-->
+        <!--            <th scope="col">食入毒性</th>-->
+        <!--            <th scope="col">吸入毒性</th>-->
+        <!--            <th scope="col">反应总放能</th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+      </el-row>
+      <el-divider content-position="left">食入毒性表</el-divider>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data_srdx"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="核素名称">
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable
+            >
+            </el-table-column>
+            <el-table-column
+                label="数量  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+        <!--        <ul class="list-group list-group-flush">-->
+        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+        <!--        </ul>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+        <!--                @click="sort_list(item)"-->
+        <!--                :class="{'text-primary':item.isSelected}"></th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col">核素活度</th>-->
+        <!--            <th scope="col">核素质量</th>-->
+        <!--            <th scope="col">食入毒性</th>-->
+        <!--            <th scope="col">吸入毒性</th>-->
+        <!--            <th scope="col">反应总放能</th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+      </el-row>
+      <el-divider content-position="left">吸入毒性表</el-divider>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data_xrdx"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="核素名称">
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable
+            >
+            </el-table-column>
+            <el-table-column
+                label="数量  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+        <!--        <ul class="list-group list-group-flush">-->
+        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+        <!--        </ul>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+        <!--                @click="sort_list(item)"-->
+        <!--                :class="{'text-primary':item.isSelected}"></th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col">核素活度</th>-->
+        <!--            <th scope="col">核素质量</th>-->
+        <!--            <th scope="col">食入毒性</th>-->
+        <!--            <th scope="col">吸入毒性</th>-->
+        <!--            <th scope="col">反应总放能</th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+      </el-row>
+      <el-divider content-position="left">反应放能表</el-divider>
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <el-table
+              :data="table_data_fyfn"
+              tooltip-effect="dark"
+              @selection-change="handleSelectionChange"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="核素名称">
+            </el-table-column>
+            <el-table-column
+                prop="zzs"
+                label="质子数"
+                sortable>
+            </el-table-column>
+            <el-table-column
+                prop="zls"
+                label="质量数"
+                sortable
+            >
+            </el-table-column>
+            <el-table-column
+                label="数量  时间(s)"
+            >
+              <el-table-column v-for="(item, index) in times" :key="index"
+                               :prop="item.toString()"
+                               :label="item.toString()"
+                               sortable
+                               :formatter="formatter"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+        <!--        <ul class="list-group list-group-flush">-->
+        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
+        <!--        </ul>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
+        <!--                @click="sort_list(item)"-->
+        <!--                :class="{'text-primary':item.isSelected}"></th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
+        <!--          <thead class="thead-light">-->
+        <!--          <tr>-->
+        <!--            <th scope="col">核素活度</th>-->
+        <!--            <th scope="col">核素质量</th>-->
+        <!--            <th scope="col">食入毒性</th>-->
+        <!--            <th scope="col">吸入毒性</th>-->
+        <!--            <th scope="col">反应总放能</th>-->
+        <!--          </tr>-->
+        <!--          </thead>-->
+        <!--          <tbody>-->
+        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
+        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
+        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
+        <!--          </tbody>-->
+        <!--        </table>-->
+      </el-row>
+      <el-divider content-position="left">各种图</el-divider>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><h5>能谱图</h5></li>
         <li class="list-group-item">
@@ -134,9 +494,13 @@ import store from "@/store";
 export default {
   data() {
     return {
-      table_data: [],
+      table_data_sl: [],
+      table_data_hd: [],
+      table_data_zl: [],
+      table_data_srdx: [],
+      table_data_xrdx: [],
+      table_data_fyfn: [],
       times: [],
-      sl: [],
       dp_chart: false,
       dp_bar_chart: false,
       data_title: "Test",
@@ -174,19 +538,53 @@ export default {
       let zzs = data.zhizishu
       let zls = data.zhiliangshu
       let sl = data.shuliang
-      this.sl = sl
+      let hd = data.huodu
+      let zl = data.zhiliang
+      let srdx = data.shiruduxing
+      let xrdx = data.xiruduxing
+      let fyfn = data.fanyingfangneng
       this.times = data.times
       // console.log(this.sl)
 
       for (let i = 0; i < hs.length; i++) {
-        let temp = {}
-        temp.name = hs[i]
-        temp.zzs = zzs[0][i]
-        temp.zls = zls[0][i]
+        let temp_sl = {}
+        let temp_hd = {}
+        let temp_zl = {}
+        let temp_srdx = {}
+        let temp_xrdx = {}
+        let temp_fyfn = {}
+        temp_sl.name = hs[i]
+        temp_hd.name = hs[i]
+        temp_zl.name = hs[i]
+        temp_srdx.name = hs[i]
+        temp_xrdx.name = hs[i]
+        temp_fyfn.name = hs[i]
+        temp_sl.zzs = zzs[0][i]
+        temp_hd.zzs = zzs[0][i]
+        temp_zl.zzs = zzs[0][i]
+        temp_srdx.zzs = zzs[0][i]
+        temp_xrdx.zzs = zzs[0][i]
+        temp_fyfn.zzs = zzs[0][i]
+        temp_sl.zls = zls[0][i]
+        temp_hd.zls = zls[0][i]
+        temp_zl.zls = zls[0][i]
+        temp_srdx.zls = zls[0][i]
+        temp_xrdx.zls = zls[0][i]
+        temp_fyfn.zls = zls[0][i]
         for (let j = 0; j < this.times.length; j++) {
-          temp[this.times[j].toString()] = parseFloat(sl[j][i])
+          temp_sl[this.times[j].toString()] = parseFloat(sl[j][i])
+          temp_hd[this.times[j].toString()] = parseFloat(hd[j][i])
+          temp_zl[this.times[j].toString()] = parseFloat(zl[j][i])
+          temp_srdx[this.times[j].toString()] = parseFloat(srdx[j][i])
+          temp_xrdx[this.times[j].toString()] = parseFloat(xrdx[j][i])
+          temp_fyfn[this.times[j].toString()] = parseFloat(fyfn[j][i])
         }
-        this.table_data.push(temp)
+        this.table_data_sl.push(temp_sl)
+        this.table_data_hd.push(temp_hd)
+        this.table_data_zl.push(temp_zl)
+        this.table_data_srdx.push(temp_srdx)
+        this.table_data_xrdx.push(temp_xrdx)
+        this.table_data_fyfn.push(temp_fyfn)
       }
 
       // this.result = data;
