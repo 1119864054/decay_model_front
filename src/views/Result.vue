@@ -6,7 +6,7 @@
         <el-col :xl="24" :lg="24">
           <div class="row m-2">
             <button type="button" class="btn btn-sm btn-outline-info m-2" @click="get_back">返回</button>
-            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_final">下载核素信息</button>
+            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="exportExcel">下载核素信息</button>
             <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_abg">下载能谱信息</button>
           </div>
         </el-col>
@@ -18,6 +18,7 @@
               :data="table_data_sl"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table1"
           >
             <el-table-column
                 type="selection"
@@ -90,6 +91,7 @@
               :data="table_data_hd"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table2"
           >
             <el-table-column
                 type="selection"
@@ -162,6 +164,7 @@
               :data="table_data_zl"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table3"
           >
             <el-table-column
                 type="selection"
@@ -234,6 +237,7 @@
               :data="table_data_srdx"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table4"
           >
             <el-table-column
                 type="selection"
@@ -306,6 +310,7 @@
               :data="table_data_xrdx"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table5"
           >
             <el-table-column
                 type="selection"
@@ -378,6 +383,7 @@
               :data="table_data_fyfn"
               tooltip-effect="dark"
               @selection-change="handleSelectionChange"
+              id="table6"
           >
             <el-table-column
                 type="selection"
@@ -490,6 +496,8 @@
 import {request} from "@/network/request";
 import Chart from "chart.js";
 import store from "@/store";
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 
 export default {
   data() {
@@ -519,7 +527,9 @@ export default {
   },
   created() {
     let data = store.getters.getResult.data;
+    // let pic = store.getters.getResult.picture
     this.analyze_data(data);
+    // this.analyze_pic(pic);
   },
   computed: {
     sortFinal: function () {
@@ -527,6 +537,30 @@ export default {
     }
   },
   methods: {
+    exportExcel () {
+      /* generate workbook object from table */
+      const wb = XLSX.utils.book_new()
+      let sheet1 = XLSX.utils.table_to_sheet(document.querySelector('#table1'))
+      let sheet2 = XLSX.utils.table_to_sheet(document.querySelector('#table2'))
+      let sheet3 = XLSX.utils.table_to_sheet(document.querySelector('#table3'))
+      let sheet4 = XLSX.utils.table_to_sheet(document.querySelector('#table4'))
+      let sheet5 = XLSX.utils.table_to_sheet(document.querySelector('#table5'))
+      let sheet6 = XLSX.utils.table_to_sheet(document.querySelector('#table6'))
+      /* get binary string as output */
+
+      XLSX.utils.book_append_sheet(wb, sheet1, '核素数量');
+      XLSX.utils.book_append_sheet(wb, sheet2, '核素活度');
+      XLSX.utils.book_append_sheet(wb, sheet3, '核素质量');
+      XLSX.utils.book_append_sheet(wb, sheet4, '食入毒性');
+      XLSX.utils.book_append_sheet(wb, sheet5, '吸入毒性');
+      XLSX.utils.book_append_sheet(wb, sheet6, '反应放能');
+
+      let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array'})
+      try {
+        FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '核素信息.xlsx')
+      } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+      return wbout
+    },
     sortByKey(a, b) {
       let x = parseFloat(b);
       let y = parseFloat(a);

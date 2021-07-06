@@ -13,10 +13,12 @@
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.54",
     "eslint-plugin-vue": "^7.0.0",
+    "file-saver": "^2.0.5",
     "vue": "^3.0.0",
     "vue-particles": "^1.0.9",
     "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
