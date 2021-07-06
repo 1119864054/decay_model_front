@@ -1,271 +1,150 @@
 <template>
   <el-container>
     <el-main>
-
+      <el-row>
+        <el-col :xl="24" :lg="24">
+          <v-chart autoresize :options="polar" />
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :xl="24" :lg="24">
           <div class="row m-2">
-            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="get_back">返回</button>
-            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="exportExcel">下载核素信息</button>
-            <button type="button" class="btn btn-sm btn-outline-info m-2" @click="download_abg">下载能谱信息</button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-info m-2"
+              @click="get_back"
+            >
+              返回
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-info m-2"
+              @click="exportExcel"
+            >
+              下载核素信息
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-info m-2"
+              @click="download_abg"
+            >
+              下载能谱信息
+            </button>
           </div>
         </el-col>
       </el-row>
+
       <el-divider content-position="left">核素数量表</el-divider>
+
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_sl"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table1"
+            :data="table_data_sl"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table1"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="数量  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="数量  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
           </el-table>
         </el-col>
-
-<!--        <ul class="list-group list-group-flush">-->
-<!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
-<!--        </ul>-->
-<!--        <table class="table table-hover table-responsive-sm table-sm">-->
-<!--          <thead class="thead-light">-->
-<!--          <tr>-->
-<!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
-<!--                @click="sort_list(item)"-->
-<!--                :class="{'text-primary':item.isSelected}"></th>-->
-<!--          </tr>-->
-<!--          </thead>-->
-<!--          <tbody>-->
-<!--          </tbody>-->
-<!--        </table>-->
-<!--        <table class="table table-hover table-responsive-sm table-sm">-->
-<!--          <thead class="thead-light">-->
-<!--          <tr>-->
-<!--            <th scope="col">核素活度</th>-->
-<!--            <th scope="col">核素质量</th>-->
-<!--            <th scope="col">食入毒性</th>-->
-<!--            <th scope="col">吸入毒性</th>-->
-<!--            <th scope="col">反应总放能</th>-->
-<!--          </tr>-->
-<!--          </thead>-->
-<!--          <tbody>-->
-<!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
-<!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
-<!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
-<!--          </tbody>-->
-<!--        </table>-->
       </el-row>
       <el-divider content-position="left">核素活度表</el-divider>
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_hd"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table2"
+            :data="table_data_hd"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table2"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="活度  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="活度  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
           </el-table>
         </el-col>
-
-        <!--        <ul class="list-group list-group-flush">-->
-        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
-        <!--        </ul>-->
-        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
-        <!--          <thead class="thead-light">-->
-        <!--          <tr>-->
-        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
-        <!--                @click="sort_list(item)"-->
-        <!--                :class="{'text-primary':item.isSelected}"></th>-->
-        <!--          </tr>-->
-        <!--          </thead>-->
-        <!--          <tbody>-->
-        <!--          </tbody>-->
-        <!--        </table>-->
-        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
-        <!--          <thead class="thead-light">-->
-        <!--          <tr>-->
-        <!--            <th scope="col">核素活度</th>-->
-        <!--            <th scope="col">核素质量</th>-->
-        <!--            <th scope="col">食入毒性</th>-->
-        <!--            <th scope="col">吸入毒性</th>-->
-        <!--            <th scope="col">反应总放能</th>-->
-        <!--          </tr>-->
-        <!--          </thead>-->
-        <!--          <tbody>-->
-        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
-        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
-        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
-        <!--          </tbody>-->
-        <!--        </table>-->
       </el-row>
       <el-divider content-position="left">核素质量表</el-divider>
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_zl"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table3"
+            :data="table_data_zl"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table3"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="数量  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="数量  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
           </el-table>
         </el-col>
-
-        <!--        <ul class="list-group list-group-flush">-->
-        <!--          <li class="list-group-item"><h5 v-text="data_title"></h5></li>-->
-        <!--        </ul>-->
-        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
-        <!--          <thead class="thead-light">-->
-        <!--          <tr>-->
-        <!--            <th scope="col" v-for="(item,index) in title_list" :key="index" v-text="item.name"-->
-        <!--                @click="sort_list(item)"-->
-        <!--                :class="{'text-primary':item.isSelected}"></th>-->
-        <!--          </tr>-->
-        <!--          </thead>-->
-        <!--          <tbody>-->
-        <!--          </tbody>-->
-        <!--        </table>-->
-        <!--        <table class="table table-hover table-responsive-sm table-sm">-->
-        <!--          <thead class="thead-light">-->
-        <!--          <tr>-->
-        <!--            <th scope="col">核素活度</th>-->
-        <!--            <th scope="col">核素质量</th>-->
-        <!--            <th scope="col">食入毒性</th>-->
-        <!--            <th scope="col">吸入毒性</th>-->
-        <!--            <th scope="col">反应总放能</th>-->
-        <!--          </tr>-->
-        <!--          </thead>-->
-        <!--          <tbody>-->
-        <!--          &lt;!&ndash;        <tr v-for="(list,key) in final">&ndash;&gt;-->
-        <!--          &lt;!&ndash;          <th v-for="item in list" v-text="item" v-if="key === 'total'"></th>&ndash;&gt;-->
-        <!--          &lt;!&ndash;        </tr>&ndash;&gt;-->
-        <!--          </tbody>-->
-        <!--        </table>-->
       </el-row>
       <el-divider content-position="left">食入毒性表</el-divider>
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_srdx"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table4"
+            :data="table_data_srdx"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table4"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="数量  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="数量  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
@@ -307,38 +186,25 @@
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_xrdx"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table5"
+            :data="table_data_xrdx"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table5"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="数量  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="数量  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
@@ -380,38 +246,25 @@
       <el-row>
         <el-col :xl="24" :lg="24">
           <el-table
-              :data="table_data_fyfn"
-              tooltip-effect="dark"
-              @selection-change="handleSelectionChange"
-              id="table6"
+            :data="table_data_fyfn"
+            tooltip-effect="dark"
+            @selection-change="handleSelectionChange"
+            id="table6"
           >
-            <el-table-column
-                type="selection"
-                width="55">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="name" label="核素名称"></el-table-column>
+            <el-table-column prop="zzs" label="质子数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="name"
-                label="核素名称">
+            <el-table-column prop="zls" label="质量数" sortable>
             </el-table-column>
-            <el-table-column
-                prop="zzs"
-                label="质子数"
-                sortable>
-            </el-table-column>
-            <el-table-column
-                prop="zls"
-                label="质量数"
+            <el-table-column label="数量  时间(s)">
+              <el-table-column
+                v-for="(item, index) in times"
+                :key="index"
+                :prop="item.toString()"
+                :label="item.toString()"
                 sortable
-            >
-            </el-table-column>
-            <el-table-column
-                label="数量  时间(s)"
-            >
-              <el-table-column v-for="(item, index) in times" :key="index"
-                               :prop="item.toString()"
-                               :label="item.toString()"
-                               sortable
-                               :formatter="formatter"
+                :formatter="formatter"
               >
               </el-table-column>
             </el-table-column>
@@ -454,11 +307,26 @@
         <li class="list-group-item"><h5>能谱图</h5></li>
         <li class="list-group-item">
           <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_chart('alpha')">alpha能谱图
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_chart('alpha')"
+            >
+              alpha能谱图
             </button>
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_chart('beta')">beta能谱图
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_chart('beta')"
+            >
+              beta能谱图
             </button>
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_chart('gamma')">gamma能谱图
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_chart('gamma')"
+            >
+              gamma能谱图
             </button>
           </div>
         </li>
@@ -472,12 +340,25 @@
         <li class="list-group-item"><h5>群能谱图</h5></li>
         <li class="list-group-item">
           <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_bar_chart('alpha')">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_bar_chart('alpha')"
+            >
               alpha群能谱图
             </button>
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_bar_chart('beta')">beta群能谱图
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_bar_chart('beta')"
+            >
+              beta群能谱图
             </button>
-            <button type="button" class="btn btn-sm btn-secondary" @click="get_bar_chart('gamma')">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="get_bar_chart('gamma')"
+            >
               gamma群能谱图
             </button>
           </div>
@@ -487,19 +368,26 @@
       <div v-show="dp_bar_chart" class="img-fluid" style="position: relative">
         <canvas id="myBarChart"></canvas>
       </div>
-      <hr/>
+      <hr />
     </el-main>
   </el-container>
 </template>
 
 <script>
-import {request} from "@/network/request";
-import Chart from "chart.js";
+import { request } from "@/network/request";
 import store from "@/store";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
+import ECharts from 'vue-echarts'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/component/polar'
+import polar from '@/assets/data/polar.js'
+
 
 export default {
+  components: {
+    "v-chart": ECharts
+  },
   data() {
     return {
       table_data_sl: [],
@@ -513,17 +401,18 @@ export default {
       dp_bar_chart: false,
       data_title: "Test",
       title_list: [
-        {name: "核素名称", isSelected: false, key: 0},
-        {name: "质子数", isSelected: false, key: 1},
-        {name: "质量数", isSelected: false, key: 2},
-        {name: "核素数量", isSelected: false, key: 3},
-        {name: "核素活度", isSelected: false, key: 4},
-        {name: "核素质量", isSelected: false, key: 5},
-        {name: "食入毒性", isSelected: false, key: 6},
-        {name: "吸入毒性", isSelected: false, key: 7},
-        {name: "反应放能", isSelected: false, key: 8}
-      ]
-    }
+        { name: "核素名称", isSelected: false, key: 0 },
+        { name: "质子数", isSelected: false, key: 1 },
+        { name: "质量数", isSelected: false, key: 2 },
+        { name: "核素数量", isSelected: false, key: 3 },
+        { name: "核素活度", isSelected: false, key: 4 },
+        { name: "核素质量", isSelected: false, key: 5 },
+        { name: "食入毒性", isSelected: false, key: 6 },
+        { name: "吸入毒性", isSelected: false, key: 7 },
+        { name: "反应放能", isSelected: false, key: 8 }
+      ],
+      polar
+    };
   },
   created() {
     let data = store.getters.getResult.data;
@@ -532,34 +421,43 @@ export default {
     // this.analyze_pic(pic);
   },
   computed: {
-    sortFinal: function () {
+    sortFinal: function() {
       return this.sortByKey(this.list_final, this.sort_key);
     }
   },
   methods: {
-    exportExcel () {
+    exportExcel() {
       /* generate workbook object from table */
-      const wb = XLSX.utils.book_new()
-      let sheet1 = XLSX.utils.table_to_sheet(document.querySelector('#table1'))
-      let sheet2 = XLSX.utils.table_to_sheet(document.querySelector('#table2'))
-      let sheet3 = XLSX.utils.table_to_sheet(document.querySelector('#table3'))
-      let sheet4 = XLSX.utils.table_to_sheet(document.querySelector('#table4'))
-      let sheet5 = XLSX.utils.table_to_sheet(document.querySelector('#table5'))
-      let sheet6 = XLSX.utils.table_to_sheet(document.querySelector('#table6'))
+      const wb = XLSX.utils.book_new();
+      let sheet1 = XLSX.utils.table_to_sheet(document.querySelector("#table1"));
+      let sheet2 = XLSX.utils.table_to_sheet(document.querySelector("#table2"));
+      let sheet3 = XLSX.utils.table_to_sheet(document.querySelector("#table3"));
+      let sheet4 = XLSX.utils.table_to_sheet(document.querySelector("#table4"));
+      let sheet5 = XLSX.utils.table_to_sheet(document.querySelector("#table5"));
+      let sheet6 = XLSX.utils.table_to_sheet(document.querySelector("#table6"));
       /* get binary string as output */
 
-      XLSX.utils.book_append_sheet(wb, sheet1, '核素数量');
-      XLSX.utils.book_append_sheet(wb, sheet2, '核素活度');
-      XLSX.utils.book_append_sheet(wb, sheet3, '核素质量');
-      XLSX.utils.book_append_sheet(wb, sheet4, '食入毒性');
-      XLSX.utils.book_append_sheet(wb, sheet5, '吸入毒性');
-      XLSX.utils.book_append_sheet(wb, sheet6, '反应放能');
+      XLSX.utils.book_append_sheet(wb, sheet1, "核素数量");
+      XLSX.utils.book_append_sheet(wb, sheet2, "核素活度");
+      XLSX.utils.book_append_sheet(wb, sheet3, "核素质量");
+      XLSX.utils.book_append_sheet(wb, sheet4, "食入毒性");
+      XLSX.utils.book_append_sheet(wb, sheet5, "吸入毒性");
+      XLSX.utils.book_append_sheet(wb, sheet6, "反应放能");
 
-      let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array'})
+      let wbout = XLSX.write(wb, {
+        bookType: "xlsx",
+        bookSST: true,
+        type: "array"
+      });
       try {
-        FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '核素信息.xlsx')
-      } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
-      return wbout
+        FileSaver.saveAs(
+          new Blob([wbout], { type: "application/octet-stream" }),
+          "核素信息.xlsx"
+        );
+      } catch (e) {
+        if (typeof console !== "undefined") console.log(e, wbout);
+      }
+      return wbout;
     },
     sortByKey(a, b) {
       let x = parseFloat(b);
@@ -568,57 +466,57 @@ export default {
     },
     analyze_data(data) {
       // console.log('data:', data)
-      let hs = data.hesu
-      let zzs = data.zhizishu
-      let zls = data.zhiliangshu
-      let sl = data.shuliang
-      let hd = data.huodu
-      let zl = data.zhiliang
-      let srdx = data.shiruduxing
-      let xrdx = data.xiruduxing
-      let fyfn = data.fanyingfangneng
-      this.times = data.times
+      let hs = data.hesu;
+      let zzs = data.zhizishu;
+      let zls = data.zhiliangshu;
+      let sl = data.shuliang;
+      let hd = data.huodu;
+      let zl = data.zhiliang;
+      let srdx = data.shiruduxing;
+      let xrdx = data.xiruduxing;
+      let fyfn = data.fanyingfangneng;
+      this.times = data.times;
       // console.log(this.sl)
 
       for (let i = 0; i < hs.length; i++) {
-        let temp_sl = {}
-        let temp_hd = {}
-        let temp_zl = {}
-        let temp_srdx = {}
-        let temp_xrdx = {}
-        let temp_fyfn = {}
-        temp_sl.name = hs[i]
-        temp_hd.name = hs[i]
-        temp_zl.name = hs[i]
-        temp_srdx.name = hs[i]
-        temp_xrdx.name = hs[i]
-        temp_fyfn.name = hs[i]
-        temp_sl.zzs = zzs[0][i]
-        temp_hd.zzs = zzs[0][i]
-        temp_zl.zzs = zzs[0][i]
-        temp_srdx.zzs = zzs[0][i]
-        temp_xrdx.zzs = zzs[0][i]
-        temp_fyfn.zzs = zzs[0][i]
-        temp_sl.zls = zls[0][i]
-        temp_hd.zls = zls[0][i]
-        temp_zl.zls = zls[0][i]
-        temp_srdx.zls = zls[0][i]
-        temp_xrdx.zls = zls[0][i]
-        temp_fyfn.zls = zls[0][i]
+        let temp_sl = {};
+        let temp_hd = {};
+        let temp_zl = {};
+        let temp_srdx = {};
+        let temp_xrdx = {};
+        let temp_fyfn = {};
+        temp_sl.name = hs[i];
+        temp_hd.name = hs[i];
+        temp_zl.name = hs[i];
+        temp_srdx.name = hs[i];
+        temp_xrdx.name = hs[i];
+        temp_fyfn.name = hs[i];
+        temp_sl.zzs = zzs[0][i];
+        temp_hd.zzs = zzs[0][i];
+        temp_zl.zzs = zzs[0][i];
+        temp_srdx.zzs = zzs[0][i];
+        temp_xrdx.zzs = zzs[0][i];
+        temp_fyfn.zzs = zzs[0][i];
+        temp_sl.zls = zls[0][i];
+        temp_hd.zls = zls[0][i];
+        temp_zl.zls = zls[0][i];
+        temp_srdx.zls = zls[0][i];
+        temp_xrdx.zls = zls[0][i];
+        temp_fyfn.zls = zls[0][i];
         for (let j = 0; j < this.times.length; j++) {
-          temp_sl[this.times[j].toString()] = parseFloat(sl[j][i])
-          temp_hd[this.times[j].toString()] = parseFloat(hd[j][i])
-          temp_zl[this.times[j].toString()] = parseFloat(zl[j][i])
-          temp_srdx[this.times[j].toString()] = parseFloat(srdx[j][i])
-          temp_xrdx[this.times[j].toString()] = parseFloat(xrdx[j][i])
-          temp_fyfn[this.times[j].toString()] = parseFloat(fyfn[j][i])
+          temp_sl[this.times[j].toString()] = parseFloat(sl[j][i]);
+          temp_hd[this.times[j].toString()] = parseFloat(hd[j][i]);
+          temp_zl[this.times[j].toString()] = parseFloat(zl[j][i]);
+          temp_srdx[this.times[j].toString()] = parseFloat(srdx[j][i]);
+          temp_xrdx[this.times[j].toString()] = parseFloat(xrdx[j][i]);
+          temp_fyfn[this.times[j].toString()] = parseFloat(fyfn[j][i]);
         }
-        this.table_data_sl.push(temp_sl)
-        this.table_data_hd.push(temp_hd)
-        this.table_data_zl.push(temp_zl)
-        this.table_data_srdx.push(temp_srdx)
-        this.table_data_xrdx.push(temp_xrdx)
-        this.table_data_fyfn.push(temp_fyfn)
+        this.table_data_sl.push(temp_sl);
+        this.table_data_hd.push(temp_hd);
+        this.table_data_zl.push(temp_zl);
+        this.table_data_srdx.push(temp_srdx);
+        this.table_data_xrdx.push(temp_xrdx);
+        this.table_data_fyfn.push(temp_fyfn);
       }
 
       // this.result = data;
@@ -639,7 +537,7 @@ export default {
       return parseFloat(cellValue).toExponential(6);
     },
     handleSelectionChange(val) {
-      console.log(val)
+      console.log(val);
     },
     clear_data() {
       this.result = [];
@@ -664,12 +562,12 @@ export default {
       request({
         url: "/delete_file/"
       })
-          .then(response => {
-            alert(response.data);
-          })
-          .catch(err => {
-            alert(err);
-          });
+        .then(response => {
+          alert(response.data);
+        })
+        .catch(err => {
+          alert(err);
+        });
     },
     download_final() {
       let filename = "核素信息.txt";
@@ -744,11 +642,12 @@ export default {
       }
 
       this.gen_txt(filename, text);
-    }, gen_txt(filename, text) {
+    },
+    gen_txt(filename, text) {
       let pom = document.createElement("a");
       pom.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(text)
       );
       pom.setAttribute("download", filename);
       if (document.createEvent) {
@@ -768,27 +667,27 @@ export default {
         },
         responseType: "blob"
       })
-          .then(response => {
-            console.log(response);
-            console.log(response.filename);
-            if ("download" in document.createElement("a")) {
-              //支持a标签download的浏览器
-              let url = window.URL.createObjectURL(response.data); //为文件流创建构建下载链接
-              let link = document.createElement("a"); //创建a标签
-              link.style.display = "none";
-              link.href = url;
-              link.setAttribute("download", "核素信息.txt"); //设置a标签的下载动作和下载文件名
-              document.body.appendChild(link);
-              link.click(); //执行下载
-              document.body.removeChild(link); //释放标签
-            } else {
-              //其他浏览器
-              navigator.msSaveBlob(response.data, "核素信息.txt");
-            }
-          })
-          .catch(err => {
-            alert(err);
-          });
+        .then(response => {
+          console.log(response);
+          console.log(response.filename);
+          if ("download" in document.createElement("a")) {
+            //支持a标签download的浏览器
+            let url = window.URL.createObjectURL(response.data); //为文件流创建构建下载链接
+            let link = document.createElement("a"); //创建a标签
+            link.style.display = "none";
+            link.href = url;
+            link.setAttribute("download", "核素信息.txt"); //设置a标签的下载动作和下载文件名
+            document.body.appendChild(link);
+            link.click(); //执行下载
+            document.body.removeChild(link); //释放标签
+          } else {
+            //其他浏览器
+            navigator.msSaveBlob(response.data, "核素信息.txt");
+          }
+        })
+        .catch(err => {
+          alert(err);
+        });
     },
     download_spectrum() {
       request({
@@ -799,27 +698,27 @@ export default {
         },
         responseType: "blob"
       })
-          .then(response => {
-            console.log(response);
-            console.log(response.filename);
-            if ("download" in document.createElement("a")) {
-              //支持a标签download的浏览器
-              let url = window.URL.createObjectURL(response.data); //为文件流创建构建下载链接
-              let link = document.createElement("a"); //创建a标签
-              link.style.display = "none";
-              link.href = url;
-              link.setAttribute("download", "能谱信息.txt"); //设置a标签的下载动作和下载文件名
-              document.body.appendChild(link);
-              link.click(); //执行下载
-              document.body.removeChild(link); //释放标签
-            } else {
-              //其他浏览器
-              navigator.msSaveBlob(response.data, "能谱信息.txt");
-            }
-          })
-          .catch(err => {
-            alert(err);
-          });
+        .then(response => {
+          console.log(response);
+          console.log(response.filename);
+          if ("download" in document.createElement("a")) {
+            //支持a标签download的浏览器
+            let url = window.URL.createObjectURL(response.data); //为文件流创建构建下载链接
+            let link = document.createElement("a"); //创建a标签
+            link.style.display = "none";
+            link.href = url;
+            link.setAttribute("download", "能谱信息.txt"); //设置a标签的下载动作和下载文件名
+            document.body.appendChild(link);
+            link.click(); //执行下载
+            document.body.removeChild(link); //释放标签
+          } else {
+            //其他浏览器
+            navigator.msSaveBlob(response.data, "能谱信息.txt");
+          }
+        })
+        .catch(err => {
+          alert(err);
+        });
     },
     pageScrollTop() {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -833,70 +732,70 @@ export default {
       localStorage.removeItem(key);
       location.reload();
     },
-    get_chart(name) {
-      let coordinate = {};
-      let label = "";
-      if (name === "alpha") {
-        coordinate = this.spectrum_alpha;
-        label = "alpha能谱图";
-      }
-      if (name === "beta") {
-        coordinate = this.spectrum_beta;
-        label = "beta能谱图";
-      }
-      if (name === "gamma") {
-        coordinate = this.spectrum_gamma;
-        label = "gamma能谱图";
-      }
-      this.dp_chart = true;
-      if (this.my_chart !== null) {
-        this.my_chart.destroy();
-      }
-
-      let xy = [];
-      for (let key in coordinate) {
-        xy.push({x: key, y: coordinate[key]});
-      }
-
-      let c = document.getElementById("myChart");
-      this.my_chart = new Chart(c, {
-        type: "scatter",
-        data: {
-          datasets: [
-            {
-              label: label,
-              borderColor: "#26473a",
-              pointBackgroundColor: "#26473a",
-              data: xy
-            }
-          ]
-        },
-        options: {
-          scales: {
-            xAxes: [
-              {
-                type: "linear",
-                position: "bottom",
-                ticks: {
-                  beginAtZero: true
-                }
-              }
-            ],
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true
-                }
-              }
-            ]
-          }
-        }
-      });
-    },
-    is_list: function (object) {
+    // get_chart(name) {
+    // let coordinate = {};
+    // let label = "";
+    // if (name === "alpha") {
+    //   coordinate = this.spectrum_alpha;
+    //   label = "alpha能谱图";
+    // }
+    // if (name === "beta") {
+    //   coordinate = this.spectrum_beta;
+    //   label = "beta能谱图";
+    // }
+    // if (name === "gamma") {
+    //   coordinate = this.spectrum_gamma;
+    //   label = "gamma能谱图";
+    // }
+    // this.dp_chart = true;
+    // if (this.my_chart !== null) {
+    //   this.my_chart.destroy();
+    // }
+    //
+    // let xy = [];
+    // for (let key in coordinate) {
+    //   xy.push({x: key, y: coordinate[key]});
+    // }
+    //
+    // let c = document.getElementById("myChart");
+    // this.my_chart = new Chart(c, {
+    //   type: "scatter",
+    //   data: {
+    //     datasets: [
+    //       {
+    //         label: label,
+    //         borderColor: "#26473a",
+    //         pointBackgroundColor: "#26473a",
+    //         data: xy
+    //       }
+    //     ]
+    //   },
+    //   options: {
+    //     scales: {
+    //       xAxes: [
+    //         {
+    //           type: "linear",
+    //           position: "bottom",
+    //           ticks: {
+    //             beginAtZero: true
+    //           }
+    //         }
+    //       ],
+    //       yAxes: [
+    //         {
+    //           ticks: {
+    //             beginAtZero: true
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   }
+    // });
+    // },
+    is_list: function(object) {
       return typeof object === typeof [];
     },
-    get_back: function () {
+    get_back: function() {
       this.clear_data();
       this.dp_chart = false;
       this.dp_bar_chart = false;
@@ -906,47 +805,53 @@ export default {
       if (this.my_bar_chart !== null) {
         this.my_bar_chart.destroy();
       }
-    },
-    get_bar_chart(name) {
-      let coordinate = [];
-      let x = [];
-      let label = "";
-      if (name === "alpha") {
-        coordinate = this.alpha;
-        label = "alpha群能谱图";
-      }
-      if (name === "beta") {
-        coordinate = this.beta;
-        label = "beta群能谱图";
-      }
-      if (name === "gamma") {
-        coordinate = this.gamma;
-        label = "gamma群能谱图";
-      }
-      for (let i = 0; i < coordinate.length; i++) {
-        let a = i * 1e5;
-        let b = (i + 1) * 1e5;
-        x.push(a + "-" + b);
-      }
-      this.dp_bar_chart = true;
-      if (this.my_bar_chart !== null) {
-        this.my_bar_chart.destroy();
-      }
-      let c = document.getElementById("myBarChart");
-      this.my_bar_chart = new Chart(c, {
-        type: "bar",
-        data: {
-          datasets: [
-            {
-              label: label,
-              data: coordinate,
-              backgroundColor: "#5c7bd9"
-            }
-          ],
-          labels: x
-        }
-      });
     }
+    // get_bar_chart(name) {
+    //   let coordinate = [];
+    //   let x = [];
+    //   let label = "";
+    //   if (name === "alpha") {
+    //     coordinate = this.alpha;
+    //     label = "alpha群能谱图";
+    //   }
+    //   if (name === "beta") {
+    //     coordinate = this.beta;
+    //     label = "beta群能谱图";
+    //   }
+    //   if (name === "gamma") {
+    //     coordinate = this.gamma;
+    //     label = "gamma群能谱图";
+    //   }
+    //   for (let i = 0; i < coordinate.length; i++) {
+    //     let a = i * 1e5;
+    //     let b = (i + 1) * 1e5;
+    //     x.push(a + "-" + b);
+    //   }
+    //   this.dp_bar_chart = true;
+    //   if (this.my_bar_chart !== null) {
+    //     this.my_bar_chart.destroy();
+    //   }
+    //   let c = document.getElementById("myBarChart");
+    //   this.my_bar_chart = new Chart(c, {
+    //     type: "bar",
+    //     data: {
+    //       datasets: [
+    //         {
+    //           label: label,
+    //           data: coordinate,
+    //           backgroundColor: "#5c7bd9"
+    //         }
+    //       ],
+    //       labels: x
+    //     }
+    //   });
+    // }
   }
-}
+};
 </script>
+<style>
+.my-chart {
+  width: 800px;
+  height: 500px;
+}
+</style>
