@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "echarts": "^5.1.2",
+    "echarts": "^4.8.0",
     "element-plus": "^1.0.2-beta.54",
     "eslint-plugin-vue": "^7.0.0",
     "file-saver": "^2.0.5",

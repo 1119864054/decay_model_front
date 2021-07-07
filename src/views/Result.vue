@@ -63,6 +63,8 @@
             </el-table-column>
           </el-table>
         </el-col>
+        <el-button type="danger" @click="drawLine">test</el-button>
+        <div id="myChart1" :style="{width: '100%', height: '100%'}"></div>
       </el-row>
       <el-divider content-position="left">核素活度表</el-divider>
       <el-row>
@@ -378,15 +380,11 @@ import { request } from "@/network/request";
 import store from "@/store";
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
-import ECharts from 'vue-echarts'
-import 'echarts/lib/chart/line'
-import 'echarts/lib/component/polar'
-import polar from '@/assets/data/polar.js'
-
+import Echarts from 'echarts'
 
 export default {
   components: {
-    "v-chart": ECharts
+    // "v-chart": ECharts
   },
   data() {
     return {
@@ -411,7 +409,7 @@ export default {
         { name: "吸入毒性", isSelected: false, key: 7 },
         { name: "反应放能", isSelected: false, key: 8 }
       ],
-      polar
+
     };
   },
   created() {
@@ -420,12 +418,47 @@ export default {
     this.analyze_data(data);
     // this.analyze_pic(pic);
   },
+  mounted() {
+    this.drawLine();
+  },
   computed: {
     sortFinal: function() {
       return this.sortByKey(this.list_final, this.sort_key);
     }
   },
   methods: {
+    drawLine(){
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = Echarts.init(document.getElementById('myChart1'))
+      // 绘制图表
+      myChart.setOption({
+        legend: {
+          data: ['84100', '84200']
+        },
+      tooltip: {
+
+      },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          name: '84100',
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          type: 'line',
+          smooth: true
+        },{
+          name: '84200',
+          data: [100, 200, 300, 400, 500, 600, 700],
+          type: 'line',
+          smooth: true
+        }
+        ]
+    });
+    },
     exportExcel() {
       /* generate workbook object from table */
       const wb = XLSX.utils.book_new();
