@@ -3,11 +3,6 @@
     <el-main>
       <el-row>
         <el-col :xl="24" :lg="24">
-          <v-chart autoresize :options="polar" />
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xl="24" :lg="24">
           <div class="row m-2">
             <button
               type="button"
@@ -63,8 +58,7 @@
             </el-table-column>
           </el-table>
         </el-col>
-        <el-button type="danger" @click="drawLine">test</el-button>
-        <div id="myChart1" :style="{width: '100%', height: '100%'}"></div>
+        <div id="myChart1" :style="{width: '100%', height: '700px'}"></div>
       </el-row>
       <el-divider content-position="left">核素活度表</el-divider>
       <el-row>
@@ -305,72 +299,80 @@
         <!--        </table>-->
       </el-row>
       <el-divider content-position="left">各种图</el-divider>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item"><h5>能谱图</h5></li>
-        <li class="list-group-item">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_chart('alpha')"
-            >
-              alpha能谱图
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_chart('beta')"
-            >
-              beta能谱图
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_chart('gamma')"
-            >
-              gamma能谱图
-            </button>
-          </div>
-        </li>
-      </ul>
+      <div v-for="(item, index) in times"
+            :key="index"
+      >
+        <el-divider content-position="left">{{item}}</el-divider>
+        <el-row>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h5>能谱图</h5></li>
+            <li class="list-group-item">
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_chart('alpha', item)"
+                >
+                  alpha能谱图
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_chart('beta', item)"
+                >
+                  beta能谱图
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_chart('gamma', item)"
+                >
+                  gamma能谱图
+                </button>
+              </div>
+            </li>
+          </ul>
+        </el-row>
+        <el-row style="height: 800px; width: 1920px">
+          <div v-show="dp_chart" id="myChart" style="height: 800px; width: 1920px"></div>
+        </el-row>
+        <el-row>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h5>群能谱图</h5></li>
+            <li class="list-group-item">
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_bar_chart('alpha', item)"
+                >
+                  alpha群能谱图
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_bar_chart('beta', item)"
+                >
+                  beta群能谱图
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-secondary"
+                    @click="get_bar_chart('gamma', item)"
+                >
+                  gamma群能谱图
+                </button>
+              </div>
+            </li>
+          </ul>
 
-      <div v-show="dp_chart" class="img-fluid" style="position: relative">
-        <canvas id="myChart"></canvas>
+          <el-row style="height: 800px; width: 1920px">
+            <div v-show="dp_bar_chart" id="myBarChart" style="height: 800px; width: 1920px"></div>
+          </el-row>
+        </el-row>
       </div>
 
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item"><h5>群能谱图</h5></li>
-        <li class="list-group-item">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_bar_chart('alpha')"
-            >
-              alpha群能谱图
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_bar_chart('beta')"
-            >
-              beta群能谱图
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="get_bar_chart('gamma')"
-            >
-              gamma群能谱图
-            </button>
-          </div>
-        </li>
-      </ul>
 
-      <div v-show="dp_bar_chart" class="img-fluid" style="position: relative">
-        <canvas id="myBarChart"></canvas>
-      </div>
-      <hr />
     </el-main>
   </el-container>
 </template>
@@ -409,17 +411,17 @@ export default {
         { name: "吸入毒性", isSelected: false, key: 7 },
         { name: "反应放能", isSelected: false, key: 8 }
       ],
-
+      table_1_legend: [],
+      table_1_xAxis: [],
+      table_1_series: [],
+      pic: {}
     };
   },
   created() {
     let data = store.getters.getResult.data;
-    // let pic = store.getters.getResult.picture
+    let pic = store.getters.getResult.picture
     this.analyze_data(data);
-    // this.analyze_pic(pic);
-  },
-  mounted() {
-    this.drawLine();
+    this.analyze_pic(pic);
   },
   computed: {
     sortFinal: function() {
@@ -427,37 +429,146 @@ export default {
     }
   },
   methods: {
-    drawLine(){
+    draw_table(){
       // 基于准备好的dom，初始化echarts实例
       let myChart = Echarts.init(document.getElementById('myChart1'))
       // 绘制图表
       myChart.setOption({
         legend: {
-          data: ['84100', '84200']
+          data: this.table_1_legend
         },
-      tooltip: {
-
-      },
+        tooltip: {
+          trigger: 'axis'
+        },
         xAxis: {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          data: this.table_1_xAxis
+        },
+        yAxis: {
+          type:'value',
+        },
+        series: this.table_1_series,
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {show: true}
+          }
+        }
+    });
+    },
+    get_chart(name, time) {
+      let temp = {}
+      for (let i in this.pic){
+        if (parseFloat(i) === parseFloat(time)) {
+          temp = this.pic[i]
+          break
+        }
+      }
+      let coordinate = {};
+      let label = "";
+      if (name === "alpha") {
+        coordinate = temp.spectrum_alpha;
+        label = "alpha能谱图";
+      }
+      if (name === "beta") {
+        coordinate = temp.spectrum_beta;
+        label = "beta能谱图";
+      }
+      if (name === "gamma") {
+        coordinate = temp.spectrum_gamma;
+        label = "gamma能谱图";
+      }
+      console.log('coordinate:', coordinate)
+      this.dp_chart = true;
+      // if (this.my_chart !== null) {
+      //   this.my_chart.despose();
+      // }
+
+      let xy = [];
+      for (let key in coordinate) {
+        xy.push([key, coordinate[key]]);
+      }
+      let my_chart = Echarts.init(document.getElementById('myChart'))
+      my_chart.setOption({
+        name: label,
+        xAxis: {},
+        yAxis: {},
+        series: [{
+          symbolSize: 20,
+          data: xy,
+          type: 'scatter'
+        }],
+        color: '#768CD0',
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {show: true}
+          }
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+      });
+    },
+    get_bar_chart(name, time) {
+      let temp = {}
+      for (let i in this.pic){
+        if (parseFloat(i) === parseFloat(time)) {
+          temp = this.pic[i]
+          break
+        }
+      }
+      let coordinate = [];
+      let x = [];
+      let label = "";
+      if (name === "alpha") {
+        coordinate = temp.alpha;
+        label = "alpha群能谱图";
+      }
+      if (name === "beta") {
+        coordinate = temp.beta;
+        label = "beta群能谱图";
+      }
+      if (name === "gamma") {
+        coordinate = temp.gamma;
+        label = "gamma群能谱图";
+      }
+      for (let i = 0; i < coordinate.length; i++) {
+        let a = i * 1e5;
+        let b = (i + 1) * 1e5;
+        x.push(a + "-" + b);
+      }
+      this.dp_bar_chart = true;
+
+
+      let my_bar_chart = Echarts.init(document.getElementById('myBarChart'));
+      my_bar_chart.setOption({
+        name: label,
+        xAxis: {
+          type: 'category',
+          data: x
         },
         yAxis: {
           type: 'value'
         },
         series: [{
-          name: '84100',
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-          type: 'line',
-          smooth: true
-        },{
-          name: '84200',
-          data: [100, 200, 300, 400, 500, 600, 700],
-          type: 'line',
-          smooth: true
-        }
-        ]
-    });
+          data: coordinate,
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          }
+        }],
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {show: true}
+          }
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+      })
     },
     exportExcel() {
       /* generate workbook object from table */
@@ -566,11 +677,57 @@ export default {
       // this.beta = data.beta;
       // this.gamma = data.gamma;
     },
+    analyze_pic(data) {
+      console.log('data:', data)
+      this.pic = data;
+
+      // this.result = data;
+      // this.final = data.final;
+      // for (let key in this.final) {
+      //   let temp = [];
+      //   temp.push(key);
+      //   this.list_final.push(temp.concat(this.final[key]));
+      // }
+      // this.spectrum_alpha = data.spectrum_alpha;
+      // this.spectrum_beta = data.spectrum_beta;
+      // this.spectrum_gamma = data.spectrum_gamma;
+      // this.alpha = data.alpha;
+      // this.beta = data.beta;
+      // this.gamma = data.gamma;
+    },
     formatter(row, column, cellValue) {
       return parseFloat(cellValue).toExponential(6);
     },
     handleSelectionChange(val) {
-      console.log(val);
+      let myChart = Echarts.init(document.getElementById('myChart1'))
+      myChart.dispose()
+      this.table_1_legend = [];
+      this.table_1_xAxis = [];
+      this.table_1_series = [];
+      for (let i in val) {
+        for (let j in val[i]) {
+          if (j !== 'name' && j !== 'zls' && j !== 'zzs') {
+            this.table_1_xAxis.push(j);
+          }
+        }
+        break;
+      }
+      for (let i in val) {
+        this.table_1_legend.push(val[i].name);
+        let y_data = [];
+        for (let j in val[i]) {
+          if (j !== 'name' && j !== 'zls' && j !== 'zzs'){
+            y_data.push(val[i][j].toExponential(6));
+          }
+        }
+        this.table_1_series.push({
+          name: val[i].name,
+          data: y_data,
+          type: 'line',
+          smooth: true
+        })
+      }
+      this.draw_table();
     },
     clear_data() {
       this.result = [];
@@ -765,66 +922,7 @@ export default {
       localStorage.removeItem(key);
       location.reload();
     },
-    // get_chart(name) {
-    // let coordinate = {};
-    // let label = "";
-    // if (name === "alpha") {
-    //   coordinate = this.spectrum_alpha;
-    //   label = "alpha能谱图";
-    // }
-    // if (name === "beta") {
-    //   coordinate = this.spectrum_beta;
-    //   label = "beta能谱图";
-    // }
-    // if (name === "gamma") {
-    //   coordinate = this.spectrum_gamma;
-    //   label = "gamma能谱图";
-    // }
-    // this.dp_chart = true;
-    // if (this.my_chart !== null) {
-    //   this.my_chart.destroy();
-    // }
-    //
-    // let xy = [];
-    // for (let key in coordinate) {
-    //   xy.push({x: key, y: coordinate[key]});
-    // }
-    //
-    // let c = document.getElementById("myChart");
-    // this.my_chart = new Chart(c, {
-    //   type: "scatter",
-    //   data: {
-    //     datasets: [
-    //       {
-    //         label: label,
-    //         borderColor: "#26473a",
-    //         pointBackgroundColor: "#26473a",
-    //         data: xy
-    //       }
-    //     ]
-    //   },
-    //   options: {
-    //     scales: {
-    //       xAxes: [
-    //         {
-    //           type: "linear",
-    //           position: "bottom",
-    //           ticks: {
-    //             beginAtZero: true
-    //           }
-    //         }
-    //       ],
-    //       yAxes: [
-    //         {
-    //           ticks: {
-    //             beginAtZero: true
-    //           }
-    //         }
-    //       ]
-    //     }
-    //   }
-    // });
-    // },
+
     is_list: function(object) {
       return typeof object === typeof [];
     },
@@ -839,46 +937,6 @@ export default {
         this.my_bar_chart.destroy();
       }
     }
-    // get_bar_chart(name) {
-    //   let coordinate = [];
-    //   let x = [];
-    //   let label = "";
-    //   if (name === "alpha") {
-    //     coordinate = this.alpha;
-    //     label = "alpha群能谱图";
-    //   }
-    //   if (name === "beta") {
-    //     coordinate = this.beta;
-    //     label = "beta群能谱图";
-    //   }
-    //   if (name === "gamma") {
-    //     coordinate = this.gamma;
-    //     label = "gamma群能谱图";
-    //   }
-    //   for (let i = 0; i < coordinate.length; i++) {
-    //     let a = i * 1e5;
-    //     let b = (i + 1) * 1e5;
-    //     x.push(a + "-" + b);
-    //   }
-    //   this.dp_bar_chart = true;
-    //   if (this.my_bar_chart !== null) {
-    //     this.my_bar_chart.destroy();
-    //   }
-    //   let c = document.getElementById("myBarChart");
-    //   this.my_bar_chart = new Chart(c, {
-    //     type: "bar",
-    //     data: {
-    //       datasets: [
-    //         {
-    //           label: label,
-    //           data: coordinate,
-    //           backgroundColor: "#5c7bd9"
-    //         }
-    //       ],
-    //       labels: x
-    //     }
-    //   });
-    // }
   }
 };
 </script>
